@@ -15,11 +15,19 @@ class ViewController: UIViewController {
             drawingPlace.delegate = self
         }
     }
+    
     @IBOutlet weak var simLabel: UILabel!
     
     var answerName: String?
     var imageName: String?
-    var isDrawInSequence: Bool = true
+    var isDrawInSequence: Bool = true {
+        didSet {
+            if let url = Bundle.main.url(forResource: imageName, withExtension: "svg") {
+                let answer = Bundle.main.url(forResource: answerName, withExtension: "svg")
+                drawingPlace.drawPaths(url: url, answers: answer, isDrawInSequence: isDrawInSequence)
+            }
+        }
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -36,7 +44,7 @@ class ViewController: UIViewController {
             self.drawingPlace.reloadScale(from: size)
         }
     }
-        
+    
     @IBAction func undo() {
         drawingPlace.undo()
     }
@@ -59,5 +67,3 @@ extension ViewController: DrawingViewDelegate {
         
     }
 }
-
-
