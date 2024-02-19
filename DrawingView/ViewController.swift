@@ -20,14 +20,7 @@ class ViewController: UIViewController {
     
     var answerName: String?
     var imageName: String?
-    var isDrawInSequence: Bool = true {
-        didSet {
-            if let url = Bundle.main.url(forResource: imageName, withExtension: "svg") {
-                let answer = Bundle.main.url(forResource: answerName, withExtension: "svg")
-                drawingPlace.drawPaths(url: url, answers: answer, isDrawInSequence: isDrawInSequence)
-            }
-        }
-    }
+    var isDrawInSequence: Bool = true
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -61,9 +54,5 @@ class ViewController: UIViewController {
 extension ViewController: DrawingViewDelegate {
     func drawingViewDidDrawingFinished(_ drawingView: DrawingView, sequence: Int?, similarity: CGFloat) {
         simLabel.text = "\(Int(floor(similarity * 100)))%"
-    }
-    
-    func drawingViewDidDrawPath(_ drawingView: DrawingView, drawPath: SVGBezierPath) {
-        
     }
 }

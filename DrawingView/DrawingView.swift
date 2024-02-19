@@ -33,7 +33,7 @@ public class DrawingView: UIView {
     private let imageView: UIImageView
     weak var delegate: DrawingViewDelegate?
     
-    var timer: Timer?
+    var autoDrawTimer: Timer?
 
     var answers: [SVGBezierPath]?
     var paths = [DrawingPath]()
@@ -169,6 +169,17 @@ public class DrawingView: UIView {
             }
         }
         self.paths = self.drawPaths(drawingPaths)
+        
+        if let answers = answers {
+            for path in answers {
+                if path.viewBox.width > 0 && path.viewBox.height > 0 {
+                    let scaleX = self.imageView.bounds.width / size.width
+                    let scaleY = self.imageView.bounds.height / size.height
+                    
+                    path.apply(CGAffineTransform(scaleX: scaleX, y: scaleY))
+                }
+            }
+        }
     }
     
     @discardableResult func drawPaths(_ paths: [DrawingPath]) -> [DrawingPath] {
@@ -200,7 +211,7 @@ public class DrawingView: UIView {
     
     public func reset() {
         canvas.reset()
-        timer?.invalidate()
+        autoDrawTimer?.invalidate()
         autoDrawView.image = nil
         for path in paths {
             path.isDrawn = false
@@ -218,6 +229,14 @@ public class DrawingView: UIView {
 }
 
 extension DrawingView: CanvasDelegate {
+    public func canvas(_ canvas: Canvas, willDrawWithPoint drawingPoint: CGPoint?) {
+        if autoDrawView.image != nil {
+            autoDrawTimer?.invalidate()
+            autoDrawView.isHidden = true
+            autoDrawView.image = nil
+        }
+    }
+    
     public func canvas(_ canvas: Canvas, didDrawWithPoints drawingPoints: [CGPoint]?) {
         if let answers = answers,
            let drawingPoints = drawingPoints {
@@ -269,7 +288,6 @@ extension DrawingView: CanvasDelegate {
             }
             
             drawPaths(paths)
-            
             if paths.filter({ !$0.isDrawn }).isEmpty {
                 canvas.isUserInteractionEnabled = false
                 delegate?.drawingViewDidDrawingComplete(self)
@@ -294,7 +312,8 @@ extension DrawingView: CanvasDelegate {
     }
     
     func autoDraw() {
-        timer?.invalidate()
+        reset()
+        autoDrawTimer?.invalidate()
         autoDrawView.isHidden = false
         autoDrawView.layoutIfNeeded()
         autoDraw(i: 0, paths: [[CGPoint]]())
@@ -311,7 +330,7 @@ extension DrawingView: CanvasDelegate {
                 var answers = drawingPath.lookupTable
                 
                 let renderer = UIGraphicsImageRenderer(bounds: autoDrawView.bounds)
-                self.timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { timer in
+                self.autoDrawTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { timer in
                     if answers.isEmpty {
                         timer.invalidate()
                         self.autoDraw(i: i + 1, paths: paths)
@@ -323,7 +342,7 @@ extension DrawingView: CanvasDelegate {
                         $0.cgContext.setStrokeColor(UIColor.red.cgColor)
                         $0.cgContext.setLineCap(.round)
                         $0.cgContext.setLineJoin(.round)
-                        $0.cgContext.setLineWidth(30)
+                        $0.cgContext.setLineWidth(20)
                         $0.cgContext.beginPath()
                         paths[i].append(last)
                         for path in paths {

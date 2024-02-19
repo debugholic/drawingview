@@ -9,6 +9,7 @@ import UIKit
 
 public protocol CanvasDelegate: NSObjectProtocol {
     func canvas(_ canvas: Canvas, didDrawWithPoints drawingPoints: [CGPoint]?)
+    func canvas(_ canvas: Canvas, willDrawWithPoint drawingPoint: CGPoint?)
 }
 
 public class Canvas: UIView {
@@ -54,6 +55,7 @@ public class Canvas: UIView {
                 
     override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let firstPoint = touches.first!.location(in: self)
+        delegate?.canvas(self, willDrawWithPoint: firstPoint)
         let image = self.renderer?.image {
             $0.cgContext.setStrokeColor(strokeColor.cgColor)
             $0.cgContext.setLineCap(.round)
