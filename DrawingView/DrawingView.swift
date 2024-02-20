@@ -65,7 +65,7 @@ public class DrawingView: UIView {
     }()
     
     private var isDrawInSequence: Bool = false
-    private(set) var sequence: Int?
+    private(set) var sequences: [Int] = [Int]()
     
     public override init(frame: CGRect) {
         canvas = Canvas(frame: frame)
@@ -108,7 +108,7 @@ public class DrawingView: UIView {
             }
         }
         self.isDrawInSequence = isDrawInSequence
-        sequence = isDrawInSequence ? 0 : nil
+        sequences.removeAll()
     }
     
     public func drawPaths(string: String, answers: String? = nil, isDrawInSequence: Bool = false) {
@@ -122,7 +122,7 @@ public class DrawingView: UIView {
             }
         }
         self.isDrawInSequence = isDrawInSequence
-        sequence = isDrawInSequence ? 0 : nil
+        sequences.removeAll()
     }
     
     public func drawPaths(svgPaths: [SVGBezierPath], answers: [SVGBezierPath]? = nil, isDrawInSequence: Bool = false) {
@@ -135,7 +135,7 @@ public class DrawingView: UIView {
             self.paths = self.drawPaths(paths.map({ DrawingPath(svgPath: $0) }))
         }
         self.isDrawInSequence = isDrawInSequence
-        sequence = isDrawInSequence ? 0 : nil
+        sequences.removeAll()
     }
     
     func applyScale(paths: [SVGBezierPath], completion: @escaping ([SVGBezierPath])->()) {
@@ -197,12 +197,10 @@ public class DrawingView: UIView {
     
     public func undo() {
         canvas.undo()
-        if !paths.isEmpty {
-            if let sequence = sequence, sequence >= 0, sequence <= paths.count {
-                if sequence > 0 {
-                    self.sequence = sequence - 1
-                }
-                paths[(self.sequence ?? 0)].isDrawn = false
+        if !paths.isEmpty && sequences.count > 0 {
+            let sequence = sequences.removeLast()
+            if sequence < paths.count {
+                paths[sequence].isDrawn = false
             }
         }
         canvas.isUserInteractionEnabled = true
@@ -216,7 +214,7 @@ public class DrawingView: UIView {
         for path in paths {
             path.isDrawn = false
         }
-        sequence = isDrawInSequence ? 0 : nil
+        sequences.removeAll()
         canvas.isUserInteractionEnabled = true
         drawPaths(paths)
     }
@@ -253,8 +251,8 @@ extension DrawingView: CanvasDelegate {
                     }
                 }
             }
-            
-            if let sequence = sequence, sequence < answers.count {
+            let sequence = (sequences.last ?? -1) + 1
+            if isDrawInSequence && sequence < answers.count {
                 let bezierPath = BezierPath(cgPath: answers[sequence].cgPath)
                 bezierPath.generateLookupTable()
                 let answerPoints = bezierPath.lookupTable
@@ -262,7 +260,7 @@ extension DrawingView: CanvasDelegate {
                 maxSim = getSimilarity(points, with: answerPoints)
                 if maxSim >= Similarity.cutOffScore {
                     index = sequence
-                    self.sequence = sequence + 1
+                    sequences.append(sequence)
                 }
                 
             } else {
@@ -275,6 +273,7 @@ extension DrawingView: CanvasDelegate {
                     maxSim = max(sim, maxSim)
                     if sim >= Similarity.cutOffScore && sim == maxSim {
                         index = i
+                        sequences.append(i)
                     }
                 }
             }

@@ -24,7 +24,7 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let url = Bundle.main.url(forResource: imageName, withExtension: "svg") {
+        if let imageName = imageName, let url = Bundle.main.url(forResource: imageName, withExtension: "svg") {
             let answer = Bundle.main.url(forResource: answerName, withExtension: "svg")
             drawingPlace.drawPaths(url: url, answers: answer, isDrawInSequence: isDrawInSequence)
             drawingPlace.delegate = self

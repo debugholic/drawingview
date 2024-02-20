@@ -13,8 +13,8 @@ class PageViewController: UIViewController {
 
     var index = 0 {
         didSet {
-            nextButton.isHidden = index == (data?.count ?? 0) - 1
-            prevButton.isHidden = index == 0
+            nextButton.isHidden = !(index < (data?.count ?? 0) - 1)
+            prevButton.isHidden = !(index > 0)
         }
     }
     
@@ -33,6 +33,8 @@ class PageViewController: UIViewController {
             viewController.isDrawInSequence = isDrawInSequence
             pageViewController?.setViewControllers([viewController], direction: .forward, animated: false)
         }
+        nextButton.isHidden = !(index < (data?.count ?? 0) - 1)
+        prevButton.isHidden = !(index > 0)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
