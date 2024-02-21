@@ -8,12 +8,12 @@
 import UIKit
 import PocketSVG
 
-protocol DrawingViewDelegate: NSObjectProtocol {
+public protocol DrawingViewDelegate: NSObjectProtocol {
     func drawingViewDidDrawingFinished(_ drawingView: DrawingView, sequence: Int?, similarity: CGFloat)
     func drawingViewDidDrawingComplete(_ drawingView: DrawingView)
 }
 
-extension DrawingViewDelegate {
+public extension DrawingViewDelegate {
     func drawingViewDidDrawingComplete(_ drawingView: DrawingView) {
         return
     }
@@ -31,7 +31,7 @@ class DrawingPath {
 public class DrawingView: UIView {    
     let canvas: Canvas
     private let imageView: UIImageView
-    weak var delegate: DrawingViewDelegate?
+    public weak var delegate: DrawingViewDelegate?
     
     var autoDrawTimer: Timer?
 
@@ -152,7 +152,7 @@ public class DrawingView: UIView {
         }
     }
     
-    func reloadScale(from size: CGSize) {
+    public func reloadScale(from size: CGSize) {
         for path in paths {
             if path.svgPath.viewBox.width > 0 && path.svgPath.viewBox.height > 0 {
                 let scaleX = self.imageView.bounds.width / size.width
@@ -310,7 +310,7 @@ extension DrawingView: CanvasDelegate {
         return Similarity.compute(p1: smaller, p2:points, frameSize: frame.size)
     }
     
-    func autoDraw() {
+    public func autoDraw() {
         reset()
         autoDrawTimer?.invalidate()
         autoDrawView.isHidden = false

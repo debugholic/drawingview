@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import PocketSVG
+import DrawingViewSwift
 
 class ViewController: UIViewController {
     @IBOutlet weak var drawingPlace: DrawingView! {
