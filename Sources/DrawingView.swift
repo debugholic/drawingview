@@ -38,18 +38,21 @@ public class DrawingView: UIView {
     var answers: [SVGBezierPath]?
     var paths = [DrawingPath]()
     
-    var strokeColor: UIColor = UIColor.blue.withAlphaComponent(1) {
+    public var strokeColor: UIColor = UIColor.blue.withAlphaComponent(1) {
         didSet {
             canvas.strokeColor = strokeColor
         }
     }
-    
-    var lineWidth: CGFloat = 10 {
+        
+    public var lineWidth: CGFloat = 10 {
         didSet {
             canvas.lineWidth = lineWidth
         }
     }
-
+    
+    public var autoDrawStrokeColor: UIColor = UIColor.red.withAlphaComponent(1)
+    public var autoDrawLineWidth: CGFloat = 10
+    
     lazy var autoDrawView: UIImageView = {
         let imageView = UIImageView()
         addSubview(imageView)
@@ -338,10 +341,10 @@ extension DrawingView: CanvasDelegate {
                     
                     let last: CGPoint = answers.removeFirst()
                     let image = renderer.image {
-                        $0.cgContext.setStrokeColor(UIColor.red.cgColor)
+                        $0.cgContext.setStrokeColor(self.autoDrawStrokeColor.cgColor)
                         $0.cgContext.setLineCap(.round)
                         $0.cgContext.setLineJoin(.round)
-                        $0.cgContext.setLineWidth(20)
+                        $0.cgContext.setLineWidth(self.autoDrawLineWidth)
                         $0.cgContext.beginPath()
                         paths[i].append(last)
                         for path in paths {

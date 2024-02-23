@@ -29,6 +29,8 @@ class ViewController: UIViewController {
             drawingPlace.drawPaths(url: url, answers: answer, isDrawInSequence: isDrawInSequence)
             drawingPlace.delegate = self
         }
+        drawingPlace.lineWidth = 10
+        drawingPlace.autoDrawLineWidth = 10
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
