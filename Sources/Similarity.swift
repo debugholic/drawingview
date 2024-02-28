@@ -7,21 +7,27 @@
 
 import UIKit
 
-struct Similarity {
-    static var cutOffScore: CGFloat = 0.7
+public struct Similarity {
+    public static var cutOffScore: CGFloat = 0.7
     
-    static var w1: CGFloat = 0.3
-    static var w2: CGFloat = 0.3
-    static var w3: CGFloat = 0.4
+    static var w1: CGFloat = 0.3 // Distance
+    static var w2: CGFloat = 0.3 // Length
+    static var w3: CGFloat = 0.4 // Direction
 
     static var range: CGFloat = 1/3
+    
+    public static func weight(distance: CGFloat, length: CGFloat, direction: CGFloat) {
+        w1 = distance / (distance + length + direction)
+        w2 = length / (distance + length + direction)
+        w3 = direction / (distance + length + direction)
+    }
     
     static func compute(p1: [CGPoint], p2: [CGPoint], frameSize: CGSize) -> CGFloat {
         let k = sqrt(pow(frameSize.width, 2) + pow(frameSize.height, 2)) * range
 
-        var sim1: CGFloat = 0 // 거리
-        var sim2: CGFloat = 0 // 크기
-        var sim3: CGFloat = 0 // 방향
+        var sim1: CGFloat = 0 // Distance
+        var sim2: CGFloat = 0 // Length
+        var sim3: CGFloat = 0 // Direction
         
         for i in 0..<p1.count {
             
