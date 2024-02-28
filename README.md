@@ -4,6 +4,10 @@
 DrawingView is an iOS UI component that parses SVG images, recognizes each path and determines the degree of consistency with the path drawn by the user.
 
 ## Features
+
+![Simulator Screen Recording - iPhone 15 Pro - 2024-02-29 at 03 25 01](https://github.com/debugholic/drawingview/assets/18521808/beaa409f-db36-49da-ade0-5c3802f30f6a)
+![Simulator Screen Recording - iPhone 15 Pro - 2024-02-29 at 03 27 06](https://github.com/debugholic/drawingview/assets/18521808/e26d9fd6-46ff-4717-8b6d-e26509017be6)
+
 Two types of input data are required:
 1. Vector image data divided into each pass to express the image.
 2. Vector data that can find the consistency with the user's drawing value.
